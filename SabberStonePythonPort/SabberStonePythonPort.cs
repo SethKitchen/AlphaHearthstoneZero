@@ -12,6 +12,30 @@ using SabberStoneCore.Tasks.PlayerTasks;
 
 namespace SabberStonePythonPortNS
 {
+	public static class Extensions
+	{
+		static Random random = new Random();
+
+		public static IEnumerable<T> Shuffle<T>(IEnumerable<T> sequence)
+		{
+			T[] retArray = sequence.ToArray();
+
+
+			for (int i = 0; i < retArray.Length - 1; i += 1)
+			{
+				int swapIndex = random.Next(i, retArray.Length);
+				if (swapIndex != i)
+				{
+					T temp = retArray[i];
+					retArray[i] = retArray[swapIndex];
+					retArray[swapIndex] = temp;
+				}
+			}
+
+			return retArray;
+		}
+	}
+
 	public class calculate
 	{
 		public int Add(int a, int b)
@@ -89,23 +113,6 @@ namespace SabberStonePythonPortNS
 			}
 		}
 
-		private static void Shuffle<T>(ref List<T> list)
-		{
-			var provider = new RNGCryptoServiceProvider();
-			int n = list.Count;
-			while (n > 1)
-			{
-				byte[] box = new byte[1];
-				do provider.GetBytes(box);
-				while (!(box[0] < n * (Byte.MaxValue / n)));
-				int k = (box[0] % n);
-				n--;
-				T value = list[k];
-				list[k] = list[n];
-				list[n] = value;
-			}
-		}
-
 		private static List<Card> GetRandomDeckFromClass(CardClass heroClass)
 		{
 			var allCards = Cards.All.ToList();
@@ -116,7 +123,7 @@ namespace SabberStonePythonPortNS
 					allCards.Add(allCards[i]);
 				}
 			}
-			Shuffle<Card>(ref allCards);
+			allCards=Extensions.Shuffle(allCards).ToList();
 			var toReturn = new List<Card>();
 			while (toReturn.Count < 30)
 			{
@@ -133,28 +140,32 @@ namespace SabberStonePythonPortNS
 		private static List<Card> GetRandomStandardDeckFromClass(CardClass heroClass)
 		{
 			var allCards = Cards.Standard[heroClass];
-			allCards = allCards.Concat(Cards.Standard[CardClass.NEUTRAL]).ToList();
 			List<Card> allCardsD = new List<Card>();
 			for (int i = 0; i < allCards.Count; i++)
 			{
 				if (allCards[i].Rarity != Rarity.LEGENDARY)
 				{
-					allCardsD.Add(allCards[i]);
-					allCardsD.Add(allCards[i]);
+					allCardsD.Add(allCards[i].Clone());
+					allCardsD.Add(allCards[i].Clone());
 				}
 				else
 				{
-					allCardsD.Add(allCards[i]);
+					allCardsD.Add(allCards[i].Clone());
 				}
 			}
-			Shuffle<Card>(ref allCardsD);
+			Console.WriteLine("Shuffling "+allCardsD.Count+ " cards");
+			allCardsD=Extensions.Shuffle(allCardsD).ToList();
 			var toReturn = new List<Card>();
+			Console.WriteLine("Starting Loop");
 			while (toReturn.Count < 30)
 			{
+				Console.WriteLine("toreturn count " + toReturn.Count);
 				toReturn.Add(allCardsD[0]);
+				Console.WriteLine("Added " + allCardsD[0].Name);
 				allCardsD.RemoveAt(0);
 			}
 
+			Console.WriteLine("returned a deck with " + toReturn.Count + " cards");
 			return toReturn;
 		}
 
@@ -163,24 +174,32 @@ namespace SabberStonePythonPortNS
 		{
 			Game game = fullGame.Clone();
 			SabberStoneCore.Model.Entities.Controller op = game.CurrentOpponent;
+			SabberStoneCore.Model.Entities.Controller p = game.CurrentPlayer;
 			SabberStoneCore.Model.Zones.HandZone hand = op.HandZone;
-			ReadOnlySpan<IPlayable> span = hand.GetSpan();
-			for (int i = span.Length - 1; i >= 0; --i)
+			int opHandCount = hand.Count;
+			for(int i=0; i<opHandCount; i++)
 			{
-				hand.Remove(span[i]);
-				hand.Add(new Unknown(in op, PlaceHolder, span[i].Id));
+				int id = hand[0].Id;
+				hand.Remove(0);
+				hand.Add(new Unknown(in op, PlaceHolder, id));
 			}
 			game.AuraUpdate();
-			span = op.DeckZone.GetSpan();
-			for (int i = 0; i < span.Length; i++)
-				span[i].ActivatedTrigger?.Remove();
-			var deck = new SabberStoneCore.Model.Zones.DeckZone(op);
-			for (int i = 0; i < span.Length; i++)
+			int opDeckCount = op.DeckZone.Count;
+			for(int i=0; i<opDeckCount; i++)
 			{
-				span[i].ActivatedTrigger?.Remove();
-				deck.Add(new Unknown(in op, PlaceHolder, span[i].Id));
+				int id = op.DeckZone[i].Id;
+				op.DeckZone[i].ActivatedTrigger?.Remove();
+				op.DeckZone.Remove(0);
+				op.DeckZone.Add(new Unknown(in op, PlaceHolder, id));
 			}
-			op.DeckZone = deck;
+			int myDeckCount = p.DeckZone.Count;
+			for (int i = 0; i < myDeckCount; i++)
+			{
+				int id = p.DeckZone[i].Id;
+				p.DeckZone[i].ActivatedTrigger?.Remove();
+				p.DeckZone.Remove(0);
+				p.DeckZone.Add(new Unknown(in p, PlaceHolder, id));
+			}
 			return game;
 		}
 

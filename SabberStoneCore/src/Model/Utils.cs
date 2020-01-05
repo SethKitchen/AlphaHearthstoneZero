@@ -678,6 +678,7 @@ namespace SabberStoneCore.Model
 		 */
 
 		// Modified by rnilva
+		[Serializable]
 		public class DeepCloneableRandom
 		{
 			private const long DOUBLE_MASK = (1L << 53) - 1;

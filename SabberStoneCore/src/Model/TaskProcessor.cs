@@ -25,6 +25,7 @@ using SabberStoneCore.Exceptions;
 
 namespace SabberStoneCore.Model
 {
+	[Serializable]
 	public class TaskQueue
 	{
 		private class TaskInstance
@@ -287,7 +288,7 @@ namespace SabberStoneCore.Model
 		}
 	}
 
-
+	[Serializable]
 	internal class EventMetaData
 	{
 		public IPlayable EventSource { get; set; }
