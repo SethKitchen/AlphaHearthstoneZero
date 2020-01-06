@@ -269,6 +269,7 @@ namespace SabberStoneCore.Model
 			}
 		}
 
+		[Serializable]
 		internal class PriorityQueue<TValue> where TValue : struct
 		{
 			[DebuggerDisplay("{DebuggerDisplay,nq}")]
@@ -370,6 +371,7 @@ namespace SabberStoneCore.Model
 			}
 		}
 
+		[Serializable]
 		internal class SmallFastCollection : ICollection<int>
 		{
 			private const int InitSize = 6;

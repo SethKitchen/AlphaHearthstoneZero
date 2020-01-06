@@ -65,6 +65,7 @@ namespace SabberStonePythonPortNS
 		private static int NumberOfActions { get; set; }
 		private static int PlayerTurn { get; set; }
 
+		
 
 		private static CardClass GetClassFromIndex(int index)
 		{

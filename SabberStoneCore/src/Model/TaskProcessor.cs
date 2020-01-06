@@ -28,6 +28,7 @@ namespace SabberStoneCore.Model
 	[Serializable]
 	public class TaskQueue
 	{
+		[Serializable]
 		private class TaskInstance
 		{
 			public readonly ISimpleTask Task;
