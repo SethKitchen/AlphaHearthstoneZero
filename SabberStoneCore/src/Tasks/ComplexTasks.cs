@@ -307,6 +307,7 @@ namespace SabberStoneCore.Tasks
 				new SummonTask());
 
 		// TODO maybee better implement it with CFM_712_t + int
+		[NonSerialized]
 		private static readonly IReadOnlyList<string> JadeGolemStr = new []
 		{
 			"CFM_712_t01",
@@ -405,6 +406,7 @@ namespace SabberStoneCore.Tasks
 				taskWithNumber);
 		}
 
+		[NonSerialized]
 		public static readonly ISimpleTask DiscardLowestCostCard
 			= Create(
 				new IncludeTask(EntityType.HAND),
@@ -414,7 +416,7 @@ namespace SabberStoneCore.Tasks
 						return list;
 					list[0].Game.OnRandomHappened(true);
 					list.Shuffle(list[0].Game.Random);
-					int min = int.MaxValue;
+					int min = Int32.MaxValue;
 					int minArg = -1;
 					for (int i = 0; i < list.Count; i++)
 					{

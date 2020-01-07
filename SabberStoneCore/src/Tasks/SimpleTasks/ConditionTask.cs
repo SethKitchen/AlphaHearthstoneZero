@@ -77,6 +77,7 @@ namespace SabberStoneCore.Tasks.SimpleTasks
 		}
 	}
 
+	[Serializable]
 	public class NumberConditionTask : SimpleTask
 	{
 		private readonly int _reference;

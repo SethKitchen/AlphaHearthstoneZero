@@ -91,6 +91,7 @@ namespace SabberStoneCore.Tasks.SimpleTasks
 		}
 	}
 
+	[Serializable]
 	public class ApplyEffectTask : SimpleTask
 	{
 		private readonly EntityType _type;

@@ -37,15 +37,18 @@ namespace SabberStoneCore.Model
 		/// The result of this predicate is independent of <see cref="TargetingType"/> of this card.
 		/// null if there is no such a condtion for this card.
 		/// </summary>
+		[field:NonSerialized]
 		public TargetingPredicate TargetingPredicate { get; private set; }
 		/// <summary>
 		/// Returns true if playing this card requires targeting, based on the given state of a <see cref="Controller"/>.
 		/// Can be null.
 		/// </summary>
+		[field:NonSerialized]
 		public AvailabilityPredicate TargetingAvailabilityPredicate { get; private set; }
 		/// <summary>
 		/// Returns false if this card cannot be played with respect to the given state of a <see cref="Controller"/>.
 		/// </summary>
+		[field:NonSerialized]
 		public AvailabilityPredicate PlayAvailabilityPredicate { get; private set; }
 		/// <summary>
 		/// True if playing this card requires at least one valid target.

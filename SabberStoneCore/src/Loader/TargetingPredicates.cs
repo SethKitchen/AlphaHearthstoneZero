@@ -11,35 +11,49 @@ namespace SabberStoneCore.Loader
 	[Serializable]
 	public static class TargetingPredicates
 	{
+		[NonSerialized]
 		private static readonly TargetingPredicate ReqMurlocTarget
 			= t => t.IsRace(Race.MURLOC);
+		[NonSerialized]
 		private static readonly TargetingPredicate ReqDemonTarget
 			= t => t.IsRace(Race.DEMON);
+		[NonSerialized]
 		private static readonly TargetingPredicate ReqMechTarget
 			= t => t.IsRace(Race.MECHANICAL);
+		[NonSerialized]
 		private static readonly TargetingPredicate ReqElementalTarget
 			= t => t.IsRace(Race.ELEMENTAL);
+		[NonSerialized]
 		private static readonly TargetingPredicate ReqBeastTarget
 			= t => t.IsRace(Race.BEAST);
+		[NonSerialized]
 		private static readonly TargetingPredicate ReqTotemTarget
 			= t => t.IsRace(Race.TOTEM);
+		[NonSerialized]
 		private static readonly TargetingPredicate ReqPirateTarget
 			= t => t.IsRace(Race.PIRATE);
+		[NonSerialized]
 		private static readonly TargetingPredicate ReqDragonTarget
 			= t => t.IsRace(Race.DRAGON);
-
+		[NonSerialized]
 		public static readonly TargetingPredicate ReqFrozenTarget
 			= t => t.IsFrozen;
+		[NonSerialized]
 		public static readonly TargetingPredicate ReqDamagedTarget
 			= t => t.Damage > 0;
+		[NonSerialized]
 		public static readonly TargetingPredicate ReqUndamagedTarget
 			= t => t.Damage == 0;
+		[NonSerialized]
 		public static readonly TargetingPredicate ReqMustTargetTaunter
 			= t => t.HasTaunt;
+		[NonSerialized]
 		public static readonly TargetingPredicate ReqStealthedTarget
 			= t => t.HasStealth;
+		[NonSerialized]
 		public static readonly TargetingPredicate ReqTargetWithDeathrattle
 			= t => t.HasDeathrattle;
+		[NonSerialized]
 		public static readonly TargetingPredicate ReqLegendaryTarget
 			= t => t.Card.Rarity == Rarity.LEGENDARY;
 
@@ -83,33 +97,36 @@ namespace SabberStoneCore.Loader
 			return t => t.AttackDamage >= value;
 		}
 
+		[NonSerialized]
 		private static readonly AvailabilityPredicate ReqMin1EnemyMinion
 			= (c, card) => c.Opponent.BoardZone.Count >= 1;
+		[NonSerialized]
 		private static readonly AvailabilityPredicate ReqMin2EnemyMinions
 			= (c, card) => c.Opponent.BoardZone.Count >= 2;
+		[NonSerialized]
 		private static readonly AvailabilityPredicate ReqMin1TotalMinion
 			= (c, card) => c.BoardZone.Count + c.Opponent.BoardZone.Count > 0;
-
+		[NonSerialized]
 		public static readonly AvailabilityPredicate ReqTargetForCombo
 			= (c, card) => c.IsComboActive;
-
+		[NonSerialized]
 		public static readonly AvailabilityPredicate ElementalPlayedLastTurn
 			= (c, card) => c.NumElementalsPlayedLastTurn > 0;
-
+		[NonSerialized]
 		public static readonly AvailabilityPredicate DragonInHand
 			= (c, card) => card.IsRace(Race.DRAGON)
 				? c.HandZone.CountOf(p => p.Card.IsRace(Race.DRAGON)) > 1
 				: c.DragonInHand;
-
+		[NonSerialized]
 		public static readonly AvailabilityPredicate ReqNumMinionSlots
 			= (c, card) => !c.BoardZone.IsFull;
-
+		[NonSerialized]
 		public static readonly AvailabilityPredicate ReqHandNotFull
 			= (c, card) => !c.HandZone.IsFull;
-
+		[NonSerialized]
 		public static readonly AvailabilityPredicate ReqWeaponEquipped
 			= (c, card) => c.Hero.Weapon != null;
-
+		[NonSerialized]
 		public static readonly AvailabilityPredicate ReqFriendlyMinionDiedThisGame
 			= (c, card) => c.GraveyardZone.Any(q => q is Minion m && m.ToBeDestroyed);
 
@@ -131,10 +148,10 @@ namespace SabberStoneCore.Loader
 				return false;
 			};
 		}
-
+		[NonSerialized]
 		public static readonly AvailabilityPredicate ReqSecretZoneCapForNonSecret
 			= (c, card) => !c.SecretZone.IsFull;
-
+		[NonSerialized]
 		public static readonly AvailabilityPredicate ReqHeroHasAttack
 			= (c, card) => c.Hero.AttackDamage > 0;
 

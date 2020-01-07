@@ -55,6 +55,7 @@ namespace SabberStoneCore.Tasks.SimpleTasks
 		}
 	}
 
+	[Serializable]
 	public class EnqueuePendingTask : SimpleTask
 	{
 		private readonly ISimpleTask _task;

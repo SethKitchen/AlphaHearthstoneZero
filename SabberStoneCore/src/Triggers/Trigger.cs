@@ -47,6 +47,7 @@ namespace SabberStoneCore.Triggers
 		/// <summary>
 		/// Task to do when this effect is triggered.
 		/// </summary>
+		[field:NonSerialized]
 		public ISimpleTask SingleTask;
 
 	    /// <summary> Additional condition for trigger sources </summary>
