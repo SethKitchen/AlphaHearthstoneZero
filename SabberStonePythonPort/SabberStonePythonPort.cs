@@ -16,6 +16,18 @@ namespace SabberStonePythonPortNS
 	{
 		static Random random = new Random();
 
+		public static T DeepClone<T>(this T obj)
+		{
+			using (var ms = new MemoryStream())
+			{
+				var formatter = new BinaryFormatter();
+				formatter.Serialize(ms, obj);
+				ms.Position = 0;
+
+				return (T)formatter.Deserialize(ms);
+			}
+		}
+
 		public static IEnumerable<T> Shuffle<T>(IEnumerable<T> sequence)
 		{
 			T[] retArray = sequence.ToArray();
@@ -36,6 +48,9 @@ namespace SabberStonePythonPortNS
 		}
 	}
 
+
+
+	[Serializable]
 	public class SabberStonePythonPort
 	{
 
@@ -52,7 +67,10 @@ namespace SabberStonePythonPortNS
 		private static int NumberOfActions { get; set; }
 		private static int PlayerTurn { get; set; }
 
-		
+		public SabberStonePythonPort GetDeepCopy()
+		{
+			return Extensions.DeepClone(this);
+		}
 
 		private static CardClass GetClassFromIndex(int index)
 		{
@@ -141,19 +159,14 @@ namespace SabberStonePythonPortNS
 					allCardsD.Add(allCards[i].Clone());
 				}
 			}
-			Console.WriteLine("Shuffling "+allCardsD.Count+ " cards");
 			allCardsD=Extensions.Shuffle(allCardsD).ToList();
 			var toReturn = new List<Card>();
-			Console.WriteLine("Starting Loop");
 			while (toReturn.Count < 30)
 			{
-				Console.WriteLine("toreturn count " + toReturn.Count);
 				toReturn.Add(allCardsD[0]);
-				Console.WriteLine("Added " + allCardsD[0].Name);
 				allCardsD.RemoveAt(0);
 			}
 
-			Console.WriteLine("returned a deck with " + toReturn.Count + " cards");
 			return toReturn;
 		}
 
@@ -237,28 +250,6 @@ namespace SabberStonePythonPortNS
 			AllVisibleGame.Process(ChooseTask.Mulligan(AllVisibleGame.Player2, MulliganRule().Invoke(AllVisibleGame.Player2.Choice.Choices.Select(p => AllVisibleGame.IdEntityDic[p]).ToList())));
 			AllVisibleGame.MainReady();
 
-			/*while (game.State != State.COMPLETE)
-			{
-				List<PlayerTask> options = game.CurrentPlayer.Options();
-				PlayerTask option = options[Rnd.Next(options.Count)];
-				//Console.WriteLine(option.FullPrint());
-				game.Process(option);
-
-
-			}
-				turns += game.Turn;
-				if (game.Player1.PlayState == PlayState.WON)
-					wins[0]++;
-				if (game.Player2.PlayState == PlayState.WON)
-					wins[1]++;
-
-			}
-			watch.Stop();
-
-			Console.WriteLine($"{total} games with {turns} turns took {watch.ElapsedMilliseconds} ms => " +
-							  $"Avg. {watch.ElapsedMilliseconds / total} per game " +
-							  $"and {watch.ElapsedMilliseconds / (total * turns)} per turn!");
-			Console.WriteLine($"playerA {wins[0] * 100 / total}% vs. playerB {wins[1] * 100 / total}%!");*/
 			PlayerViewGame = CreatePartiallyObservableGame(AllVisibleGame);
 			PlayerViewGameBinary = ObjectToByteArray(PlayerViewGame);
 			List<PlayerTask> options = AllVisibleGame.CurrentPlayer.Options();
@@ -274,7 +265,7 @@ namespace SabberStonePythonPortNS
 		public static void Step(int action)
 		{
 			List<PlayerTask> options = AllVisibleGame.CurrentPlayer.Options();
-			PlayerTask option = options[action];
+			PlayerTask option = options[action%options.Count];
 			AllVisibleGame.Process(option);
 			PlayerViewGame = CreatePartiallyObservableGame(AllVisibleGame);
 			PlayerViewGameBinary = ObjectToByteArray(PlayerViewGame);
@@ -304,81 +295,15 @@ namespace SabberStonePythonPortNS
 
 		}
 
-		public static int[] GetRewardValue()
+		public static int GetValue()
 		{
-			var currentPlayerBoard = AllVisibleGame.CurrentPlayer.BoardZone;
-			var currentPlayerHand = AllVisibleGame.CurrentPlayer.HandZone;
-			var currentPlayerSecret = AllVisibleGame.CurrentPlayer.SecretZone;
-			var currentPlayerScore = 0;
-			for (int i = 0; i < currentPlayerBoard.Count; i++)
+			if(AllVisibleGame.CurrentOpponent.PlayState==PlayState.WON)
 			{
-				if (currentPlayerBoard[i] != null)
-				{
-					currentPlayerScore += currentPlayerBoard[i].AttackDamage;
-					currentPlayerScore += currentPlayerBoard[i].Health;
-				}
-			}
-			for (int i = 0; i < currentPlayerHand.Count; i++)
-			{
-				if (currentPlayerHand[i] != null)
-				{
-					currentPlayerScore += 1;
-				}
-			}
-			for (int i = 0; i < currentPlayerSecret.Count; i++)
-			{
-				if (currentPlayerSecret[i] != null)
-				{
-					currentPlayerScore += 1;
-				}
-			}
-
-			currentPlayerScore += AllVisibleGame.CurrentPlayer.Hero.AttackDamage;
-			currentPlayerScore += AllVisibleGame.CurrentPlayer.Hero.Health;
-			currentPlayerScore += AllVisibleGame.CurrentPlayer.Hero.Armor;
-
-			var oppPlayerBoard = AllVisibleGame.CurrentOpponent.BoardZone;
-			var oppPlayerHand = AllVisibleGame.CurrentOpponent.HandZone;
-			var oppPlayerSecret = AllVisibleGame.CurrentOpponent.SecretZone;
-			var oppPlayerScore = 0;
-			for (int i = 0; i < oppPlayerBoard.Count; i++)
-			{
-				if (oppPlayerBoard[i] != null)
-				{
-					oppPlayerScore += oppPlayerBoard[i].AttackDamage;
-					oppPlayerScore += oppPlayerBoard[i].Health;
-				}
-			}
-			for (int i = 0; i < oppPlayerHand.Count; i++)
-			{
-				if (oppPlayerHand[i] != null)
-				{
-					oppPlayerScore += 1;
-				}
-			}
-			for (int i = 0; i < oppPlayerSecret.Count; i++)
-			{
-				if (oppPlayerSecret[i] != null)
-				{
-					oppPlayerScore += 1;
-				}
-			}
-
-			oppPlayerScore += AllVisibleGame.CurrentOpponent.Hero.AttackDamage;
-			oppPlayerScore += AllVisibleGame.CurrentOpponent.Hero.Health;
-			oppPlayerScore += AllVisibleGame.CurrentOpponent.Hero.Armor;
-
-			if (currentPlayerScore > oppPlayerScore)
-			{
-				return new int[] { 1, currentPlayerScore, oppPlayerScore };
-			}
-			else if (currentPlayerScore < oppPlayerScore)
-			{
-				return new int[] { -1, currentPlayerScore, oppPlayerScore };
+				return -1;
 			}
 			else
 			{
-				return new int[] { 0, currentPlayerScore, oppPlayerScore };
+				return 0;
 			}
 		}
 	}
