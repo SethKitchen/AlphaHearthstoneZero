@@ -1,3 +1,31 @@
+This is a fork of SabberStone which you can see the original repo information for below. I also use the AlphaGo algorithm here:
+
+https://github.com/AppliedDataSciencePartners/DeepReinforcementLearning
+
+
+# What's needed?
+
+- Pythonnet (allows us to use the c# SabberStoneCore Hearthstone simulator in python so we can apply machine learning with tensorflow)
+- Python (runs pythonnet/tensorflow)
+- Tensorflow (Deep Learning)
+- C# (SabberStone Core)
+
+# How to use?
+
+1) Build the C# .sln which will build SabberStoneCore and the C# Wrapper I made to work with the AlphaGo Framework
+		- If you get an error about System.Memory later on it's because NuGet either forgets to add the reference or includes the wrong version
+		     - Right click project->Manage Nuget Packages for both SabberStoneCore and SabberstonePythonPort and uninstall System.Memory. Then reinstall it in both project and make sure the versions match. Clean Solution and Rebuild.
+	
+	 - I think it's also because SabberStoneCore uses .NetStandard and SabberStonePythonPort has to be .NetFramework to work with Pythonnet and there are still bugs in the exchange. This also causes "Engine Failure Exception" which is unfortunate because randomly the program just gets stuck... trying to figure that out.
+				 
+2) Open command line and run "python main.py"
+ 		- If a package ("Could not find module/package blah") is missing "python -m pip install [package]"
+		
+
+
+
+# Sabberstone Stuff
+
 <p align="center">
 <img src="docs/readme/sabberstoneNew.png" alt="SabberStone logo" height="80%"/>
 </p>
